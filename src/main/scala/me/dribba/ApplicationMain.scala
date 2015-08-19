@@ -1,11 +1,28 @@
 package me.dribba
 
 import akka.actor.ActorSystem
+import com.pi4j.wiringpi.Gpio
+import com.pi4j.wiringpi.SoftPwm
 
 object ApplicationMain extends App {
-  val system = ActorSystem("MyActorSystem")
-  val pingActor = system.actorOf(Relay1Actor.props, "relay")
-  pingActor ! Relay1Actor.On
 
-  system.awaitTermination()
+
+
+  def main(args: Seq[String]): Unit = {
+
+    val cluster1 = BedCluster()
+
+
+
+
+
+
+
+
+
+
+
+  }
+
+
 }
