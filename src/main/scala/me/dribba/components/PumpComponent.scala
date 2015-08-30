@@ -1,4 +1,9 @@
 package me.dribba.components
 
-class PumpComponent {
+trait PumpComponent {
+
+  def off(): Unit
+
+  def on(): Unit
+
 }

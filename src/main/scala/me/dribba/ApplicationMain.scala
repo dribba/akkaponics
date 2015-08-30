@@ -8,21 +8,6 @@ object ApplicationMain extends App {
 
 
 
-  def main(args: Seq[String]): Unit = {
-
-    val cluster1 = BedCluster()
-
-
-
-
-
-
-
-
-
-
-
-  }
 
 
 }
