@@ -1,8 +1,8 @@
 package me.dribba.actors
 
-import akka.actor.{ActorLogging, ActorRef, Actor}
-import me.dribba.models.GrowBedActorFactory
+import akka.actor.{Props, ActorLogging, ActorRef, Actor}
 import me.dribba.models.aquaponics.GrowBed
+import me.dribba.providers.GrowBedActorFactory
 
 import scala.collection.immutable.Queue
 import scala.concurrent.duration.FiniteDuration
@@ -76,6 +76,13 @@ class GrowBedSupervisorActor(
         removeActiveBed(sender())
     }
   }
+
+}
+
+object GrowBedSupervisorActor {
+
+  def props(beds: List[GrowBed], cycleEvery: FiniteDuration, growBedFactory: GrowBedActorFactory): Props =
+    Props(classOf[GrowBedSupervisorActor], beds, cycleEvery, growBedFactory)
 
 }
 

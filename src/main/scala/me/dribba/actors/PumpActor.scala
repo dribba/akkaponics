@@ -10,16 +10,16 @@ class PumpActor(pump: PumpComponent) extends Actor with ActorLogging {
   private var status: Status = Off
 
   override def preStart() = {
-    pump.off
+    pump.off()
   }
 
   private val pumpMessage: PartialFunction[PumpMessage, Unit] = {
     case TurnPumpOff =>
-        pump.off
+        pump.off()
         status = Off
 
     case TurnPumpOn =>
-        pump.on
+        pump.on()
         status = On
 
     case PumpStatus =>

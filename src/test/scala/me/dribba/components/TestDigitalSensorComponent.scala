@@ -6,8 +6,6 @@ import me.dribba.models.{DigitalSensorStatus, Status}
 
 class TestDigitalSensorComponent(actor: ActorRef, private var status: Status = Status.Off) extends DigitalSensorComponent {
 
-  override def currentStatus: Status = status
-
   def switchOn(): Unit = {
     status = Status.On
     actor ! DigitalSensorStatus(status)
@@ -18,7 +16,4 @@ class TestDigitalSensorComponent(actor: ActorRef, private var status: Status = S
     actor ! DigitalSensorStatus(status)
   }
 
-  override def listen(): Unit = ???
-
-  override def stopListening(): Unit = ???
 }

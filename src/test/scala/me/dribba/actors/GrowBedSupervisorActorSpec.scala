@@ -1,10 +1,10 @@
 package me.dribba.actors
 
-import akka.actor.{Props, ActorRef, ActorRefFactory, ActorSystem}
+import akka.actor._
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import com.pi4j.io.gpio.{GpioPinDigitalInput, GpioPinDigitalOutput}
-import me.dribba.models.GrowBedActorFactory
 import me.dribba.models.aquaponics.GrowBed
+import me.dribba.providers.GrowBedActorFactory
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
@@ -43,7 +43,7 @@ class GrowBedSupervisorActorSpec (_system: ActorSystem) extends TestKit(_system)
   val sampleGrowBeds = List(growBed1, growBed2)
 
   def stubFactory(factory: GrowBed => ActorRef) = new GrowBedActorFactory {
-    override def create(actorFactory: ActorRefFactory, supervisor: ActorRef, growBed: GrowBed): ActorRef =
+    override def create(actorFactory: ActorContext, supervisor: ActorRef, growBed: GrowBed): ActorRef =
       factory(growBed)
   }
 
