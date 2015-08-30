@@ -14,11 +14,11 @@ object ApplicationMain extends App {
 
 
   object ApplicationPins {
-    val PUMP = RaspiPin.GPIO_05
-    val GROW_BED1 = RaspiPin.GPIO_06
-    val GROW_BED2 = RaspiPin.GPIO_13
-    val GROW_BED1_SENSOR = RaspiPin.GPIO_20
-    val GROW_BED2_SENSOR = RaspiPin.GPIO_21
+    val PUMP = RaspiPin.GPIO_21
+    val GROW_BED1 = RaspiPin.GPIO_22
+    val GROW_BED2 = RaspiPin.GPIO_23
+    val GROW_BED1_SENSOR = RaspiPin.GPIO_28
+    val GROW_BED2_SENSOR = RaspiPin.GPIO_29
   }
 
   override def main(args: Array[String]) = {
