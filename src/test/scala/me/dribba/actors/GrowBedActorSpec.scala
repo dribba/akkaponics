@@ -63,7 +63,16 @@ class GrowBedActorSpec(_system: ActorSystem) extends TestKit(_system) with Impli
 
       // The water reached the sensor and started flushing
       growBedActor ! DigitalSensorStatus(Status.On)
-      expectNoMsg()
+
+      // This test sensor "flickering", need to make sure bed wasn't shut
+      growBedActor ! DigitalSensorStatus(Status.Off)
+      // To make sure bed still flushing, ask to flush again
+      growBedActor ! Flush
+      expectMsg(AlreadyFlushing)
+      expectNoMsg() // This will make it wait enough to avoid the sensor flickering status
+
+      // Now trigger a flush
+      growBedActor ! DigitalSensorStatus(Status.Off)
 
       // Should cancel the sensor timeout
       timeoutProvider.sensor.cancellable.isCancelled shouldBe true

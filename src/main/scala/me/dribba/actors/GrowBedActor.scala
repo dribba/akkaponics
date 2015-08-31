@@ -1,5 +1,7 @@
 package me.dribba.actors
 
+import java.util.Date
+
 import akka.actor._
 import me.dribba.components.{DigitalSensorComponent, GrowBedComponent}
 import me.dribba.models.{Status, DigitalSensorStatus}
@@ -31,7 +33,7 @@ class GrowBedActor(
       log.info("Got sensor status({}) while not flushing", m)
   }
 
-  def flushing(timeout: Cancellable): Receive = {
+  def flushing(timeout: Cancellable, lastOn: Option[Long]): Receive = {
     case m: GrowBedMessage =>
       flushingGrowBedMessages(m)
 
@@ -51,16 +53,24 @@ class GrowBedActor(
         case Status.On =>
           // Level of water reached the sensor
           timeout.cancel()
-          become(flushing(timeoutProvider.flushTimeout))
+          become(flushing(timeoutProvider.flushTimeout, Some(System.currentTimeMillis())))
 
         case Status.Off =>
-          // Bed is flushing
-          log.info("Sensor triggered")
-          timeout.cancel()
-          growBed.turnWaterOff()
-          pumpActor ! TurnPumpOff
-          log.info("Finished flushing in bed {}", self.path.toString)
-          become(receive)
+          // TODO: Move this to the sensor logic
+          lastOn.map(System.currentTimeMillis() - _) match {
+            case Some(millis) if millis > 800 =>
+              // Bed is flushing
+              log.info("Sensor triggered off, last on: {} millis ago", millis)
+              timeout.cancel()
+              growBed.turnWaterOff()
+              pumpActor ! TurnPumpOff
+              log.info("Finished flushing in bed {}", self.path.toString)
+              become(receive)
+
+            case _ =>
+              log.info("Sensor triggered too fast")
+          }
+
       }
   }
 
@@ -69,7 +79,7 @@ class GrowBedActor(
       log.info("Started flushing in bed {}", self.path.toString)
       pumpActor ! TurnPumpOn
       growBed.turnWaterOn()
-      become(flushing(timeoutProvider.sensorTimeout))
+      become(flushing(timeoutProvider.sensorTimeout, None))
   }
 
 

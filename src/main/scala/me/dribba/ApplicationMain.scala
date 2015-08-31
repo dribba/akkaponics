@@ -51,8 +51,6 @@ object ApplicationMain extends App {
       GrowBed("GrowBed2", gpioOutPin(GROW_BED2), gpioInPin(GROW_BED2_SENSOR))
     )
 
-
-
     val pumpComponent = new PumpComponentLike(gpioOutPin(PUMP, Some("PumpPin")))
 
     val system = ActorSystem("Akkaponics")

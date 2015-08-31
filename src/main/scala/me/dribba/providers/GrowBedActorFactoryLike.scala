@@ -18,7 +18,7 @@ class GrowBedActorFactoryLike(pumpActor: ActorRef) extends GrowBedActorFactory {
     val timeoutProvider = new GrowBedTimeoutProviderLike(context.system.scheduler)
     val growBedComponent = new GrowBedComponentLike(growBed.componentPin)
 
-    context.actorOf(GrowBedActor.props(supervisor, pumpActor, growBedComponent, sensorFactory, timeoutProvider))
+    context.actorOf(GrowBedActor.props(supervisor, pumpActor, growBedComponent, sensorFactory, timeoutProvider), growBed.name + "Actor")
   }
 
 }
