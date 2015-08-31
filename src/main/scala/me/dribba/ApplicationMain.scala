@@ -67,7 +67,7 @@ object ApplicationMain extends App {
 
     log.info("Created grow bed factory. Starting supervisor...")
 
-    val supervisor = system.actorOf(GrowBedSupervisorActor.props(applicationGrowBeds, 5 minutes, growBedActorFactory))
+    val supervisor = system.actorOf(GrowBedSupervisorActor.props(applicationGrowBeds, 1 hour, growBedActorFactory))
 
   }
 
