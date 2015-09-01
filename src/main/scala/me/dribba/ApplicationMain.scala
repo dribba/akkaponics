@@ -47,8 +47,8 @@ object ApplicationMain extends App {
 
 
     val applicationGrowBeds = List(
-      GrowBed("GrowBed2", gpioOutPin(GROW_BED2), gpioInPin(GROW_BED2_SENSOR)),
-      GrowBed("GrowBed1", gpioOutPin(GROW_BED1), gpioInPin(GROW_BED1_SENSOR))
+      GrowBed("GrowBed1", gpioOutPin(GROW_BED1), gpioInPin(GROW_BED1_SENSOR)),
+      GrowBed("GrowBed2", gpioOutPin(GROW_BED2), gpioInPin(GROW_BED2_SENSOR))
     )
 
     val pumpComponent = new PumpComponentLike(gpioOutPin(PUMP, Some("PumpPin")))

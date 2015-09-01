@@ -85,7 +85,7 @@ class GrowBedActor(
 
   val flushingGrowBedMessages: PartialFunction[GrowBedMessage, Unit] = {
     case Flush =>
-      log.warning("Got Flush message when already flushing, from: {}", sender().path.toString)
+      log.info("Got Flush message when already flushing, from: {}", sender().path.toString)
       sender() ! AlreadyFlushing
   }
 
