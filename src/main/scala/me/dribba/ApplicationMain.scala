@@ -1,8 +1,11 @@
 package me.dribba
 
+import java.util.concurrent.TimeUnit
+
 import akka.actor.ActorSystem
 import akka.event.{LogSource, Logging}
 import com.pi4j.io.gpio._
+import com.typesafe.config.ConfigFactory
 import me.dribba.actors.{GrowBedSupervisorActor, PumpActor}
 import me.dribba.components.PumpComponentLike
 import me.dribba.models.aquaponics.GrowBed
@@ -24,6 +27,8 @@ object ApplicationMain extends App {
   override def main(args: Array[String]) = {
 
     import ApplicationPins._
+
+    val config = ConfigFactory.load()
 
     implicit val myLogSourceType: LogSource[AppLogger] = new LogSource[AppLogger] {
       def genString(a: AppLogger) = "AppLogger"
@@ -57,6 +62,13 @@ object ApplicationMain extends App {
 
     val log = Logging(system, new AppLogger)
 
+    log.info(config + "")
+
+    val cycle = FiniteDuration(
+      config.getDuration("akkaponics.totalFlushCycle", TimeUnit.MILLISECONDS),
+      TimeUnit.MILLISECONDS
+    )
+
     log.info("Starting application")
 
     val pump = system.actorOf(PumpActor.props(pumpComponent))
@@ -67,8 +79,9 @@ object ApplicationMain extends App {
 
     log.info("Created grow bed factory. Starting supervisor...")
 
-    val supervisor = system.actorOf(GrowBedSupervisorActor.props(applicationGrowBeds, 1 hour, growBedActorFactory))
+    system.actorOf(GrowBedSupervisorActor.props(applicationGrowBeds, cycle, growBedActorFactory), "GrowBedSupervisor")
 
+    log.info("Started!")
   }
 
 }

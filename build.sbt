@@ -12,6 +12,9 @@ libraryDependencies ++= Seq(
   "com.pi4j" % "pi4j-core" % "1.0"
 )
 
-version := "1.0.0"
-
 organization := "me.dribba"
+
+assemblyJarName in assembly := name.value + "-" + version.value + ".jar"
+
+// Skip test in assembly
+test in assembly := {}

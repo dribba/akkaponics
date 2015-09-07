@@ -1,7 +1,5 @@
 package me.dribba.actors
 
-import java.util.Date
-
 import akka.actor._
 import me.dribba.components.{DigitalSensorComponent, GrowBedComponent}
 import me.dribba.models.{Status, DigitalSensorStatus}
@@ -58,7 +56,7 @@ class GrowBedActor(
         case Status.Off =>
           // TODO: Move this to the sensor logic
           lastOn.map(System.currentTimeMillis() - _) match {
-            case Some(millis) if millis > 800 =>
+            case Some(millis) if millis > 1000 =>
               // Bed is flushing
               log.info("Sensor triggered off, last on: {} millis ago", millis)
               timeout.cancel()
