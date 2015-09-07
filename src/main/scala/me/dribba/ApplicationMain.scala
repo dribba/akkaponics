@@ -1,17 +1,14 @@
 package me.dribba
 
-import java.util.concurrent.TimeUnit
-
 import akka.actor.ActorSystem
 import akka.event.{LogSource, Logging}
 import com.pi4j.io.gpio._
 import com.typesafe.config.ConfigFactory
-import me.dribba.actors.{GrowBedSupervisorActor, PumpActor}
+import me.dribba.actors.{AllAtOnceSupervisorActor, PumpActor}
 import me.dribba.components.PumpComponentLike
 import me.dribba.models.aquaponics.GrowBed
-import me.dribba.providers.GrowBedActorFactoryLike
-
-import scala.concurrent.duration._
+import me.dribba.providers.TimedGrowBedActorFactoryLike
+import me.dribba.utils.DurationUtils._
 
 object ApplicationMain extends App {
 
@@ -28,7 +25,7 @@ object ApplicationMain extends App {
 
     import ApplicationPins._
 
-    val config = ConfigFactory.load()
+    implicit val config = ConfigFactory.load()
 
     implicit val myLogSourceType: LogSource[AppLogger] = new LogSource[AppLogger] {
       def genString(a: AppLogger) = "AppLogger"
@@ -50,10 +47,9 @@ object ApplicationMain extends App {
       }
     }
 
-
     val applicationGrowBeds = List(
-      GrowBed("GrowBed1", gpioOutPin(GROW_BED1), gpioInPin(GROW_BED1_SENSOR)),
-      GrowBed("GrowBed2", gpioOutPin(GROW_BED2), gpioInPin(GROW_BED2_SENSOR))
+      GrowBed("GrowBed1", gpioOutPin(GROW_BED1), gpioInPin(GROW_BED1_SENSOR), finiteFromConfig("akkaponics.growBeds.bed1.flushTime")),
+      GrowBed("GrowBed2", gpioOutPin(GROW_BED2), gpioInPin(GROW_BED2_SENSOR), finiteFromConfig("akkaponics.growBeds.bed2.flushTime"))
     )
 
     val pumpComponent = new PumpComponentLike(gpioOutPin(PUMP, Some("PumpPin")))
@@ -64,10 +60,7 @@ object ApplicationMain extends App {
 
     log.info(config + "")
 
-    val cycle = FiniteDuration(
-      config.getDuration("akkaponics.totalFlushCycle", TimeUnit.MILLISECONDS),
-      TimeUnit.MILLISECONDS
-    )
+    val cycle = finiteFromConfig("akkaponics.totalFlushCycle")
 
     log.info("Starting application")
 
@@ -75,11 +68,11 @@ object ApplicationMain extends App {
 
     log.info("Created pump")
 
-    val growBedActorFactory = new GrowBedActorFactoryLike(pump)
+    val growBedActorFactory = new TimedGrowBedActorFactoryLike(pump)
 
     log.info("Created grow bed factory. Starting supervisor...")
 
-    system.actorOf(GrowBedSupervisorActor.props(applicationGrowBeds, cycle, growBedActorFactory), "GrowBedSupervisor")
+    system.actorOf(AllAtOnceSupervisorActor.props(applicationGrowBeds, cycle, growBedActorFactory, config), "GrowBedSupervisor")
 
     log.info("Started!")
   }
